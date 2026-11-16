@@ -36,6 +36,20 @@ Chrome MV3 extension for the #BuildHybridAI 2026 hackathon: detect sensitive dat
 - **Content script**: future prompt interception; pings background on load.
 - **Popup**: connection status stub; options/preview later.
 
+## Hybrid inference (Firebase AI Logic)
+
+- Inference host: offscreen document (not the service worker). Service worker bridge routes
+  `AIRLOCK_MODEL_DETECT` requests to it; the host never touches storage (only `chrome.runtime`).
+- `detectWithModel(text, mode)` asks for strict JSON `{findings:[{type,text}]}` (schema set on both
+  the on-device `responseConstraint` and the cloud `responseSchema`), validates, retries a bounded
+  number of times, then locates each finding's text in the input to produce `DetectionSpan`s with
+  `source: 'model'` for `mergeDetections`.
+- Modes: prefer-on-device (default), on-device-only and cloud-only (testing). The popup reports
+  what ran from `inferenceSource` only. On-device-only pre-checks `LanguageModel` because the SDK
+  silently uses the cloud when it is absent.
+- Run reports (mode, source, error code) may be kept in `chrome.storage.session`; prompt text is
+  never stored, logged, or put in error messages.
+
 ## Out of scope for slice 1
 
 - Firebase init, App Check, Remote Config, Firestore

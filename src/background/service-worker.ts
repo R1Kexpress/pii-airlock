@@ -1,9 +1,12 @@
 import { detectPiiRegex } from '../detection/regex';
+import { registerInferenceBridge } from '../inference/bridge';
 import {
   type ExtensionMessage,
   MessageType,
   isExtensionMessage,
 } from '../messaging/types';
+
+registerInferenceBridge();
 
 chrome.runtime.onMessage.addListener(
   (

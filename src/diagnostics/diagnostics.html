@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PII Airlock diagnostics</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 720px; }
+      textarea { width: 100%; box-sizing: border-box; }
+      pre { background: #f4f4f4; padding: 8px; white-space: pre-wrap; }
+      section { margin-bottom: 20px; }
+      button, select { margin-right: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>PII Airlock diagnostics</h1>
+    <p>
+      Manual checks for the Firebase AI Logic hybrid slice. Results show metadata and span offsets
+      only; nothing typed here is logged or stored.
+    </p>
+
+    <section>
+      <h2>1. Download / initialize the on-device model</h2>
+      <p>Needs a click (user activation). Runs in this page, not the offscreen host.</p>
+      <button id="warm-up" type="button">Initialize on-device model</button>
+      <progress id="warm-progress" max="1" value="0" hidden></progress>
+      <pre id="warm-out"></pre>
+    </section>
+
+    <section>
+      <h2>2. Context checks</h2>
+      <button id="check-here" type="button">Check this page</button>
+      <button id="check-host" type="button">Check offscreen host</button>
+      <pre id="check-out"></pre>
+    </section>
+
+    <section>
+      <h2>3. Run detection through the offscreen host</h2>
+      <label>Mode <select id="mode"></select></label>
+      <p><textarea id="sample" rows="4"></textarea></p>
+      <button id="run" type="button">Run</button>
+      <pre id="run-out"></pre>
+    </section>
+
+    <script type="module" src="./diagnostics.ts"></script>
+  </body>
+</html>
