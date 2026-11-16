@@ -7,5 +7,11 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        offscreen: 'src/inference/offscreen.html',
+        diagnostics: 'src/diagnostics/diagnostics.html',
+      },
+    },
   },
 });

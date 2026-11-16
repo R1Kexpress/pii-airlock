@@ -22,6 +22,6 @@
     "page": "src/options/options.html",
     "open_in_tab": true
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "offscreen"],
   "host_permissions": ["https://*/*", "http://*/*"]
 }
