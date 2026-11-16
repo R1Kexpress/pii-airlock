@@ -1,5 +1,8 @@
-import { LOCAL_DEFAULT_POLICY, type RemotePolicy } from '../firebase/policy-keys';
-import { REMOTE_POLICY_STORAGE_KEY } from '../firebase/remote-config-policy';
+import {
+  LOCAL_DEFAULT_POLICY,
+  REMOTE_POLICY_STORAGE_KEY,
+  type RemotePolicy,
+} from '../firebase/policy-keys';
 import { applyRemotePolicy } from '../settings/apply-remote-policy';
 import { getModeSetting, setModeFromPolicy } from '../inference/settings';
 import {
