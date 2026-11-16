@@ -23,6 +23,7 @@ function cloneSettings(settings: AirlockSettings): AirlockSettings {
       work: { ...settings.presets.work },
       healthcare: { ...settings.presets.healthcare },
     },
+    userOverrides: { ...settings.userOverrides },
   };
 }
 
@@ -46,6 +47,12 @@ function paint(model: OptionsViewModel): void {
       const value = input.value as PresetId;
       if (PRESET_IDS.includes(value)) draft!.activePreset = value;
     });
+  });
+
+  const telemetry = document.getElementById('telemetry-opt-in') as HTMLInputElement | null;
+  telemetry?.addEventListener('change', () => {
+    if (!draft) return;
+    draft.telemetryOptIn = telemetry.checked;
   });
 
   document.getElementById('save-settings')?.addEventListener('click', () => {

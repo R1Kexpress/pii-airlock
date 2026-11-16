@@ -9,6 +9,7 @@ import {
   isModelDetectRequest,
   isModelDiagnosticsRequest,
 } from './messages';
+import { maybeSubmitSpansTelemetry } from '../background/telemetry-bridge';
 import { setInferenceMode } from '../background/state';
 import { getModeSetting, saveLastRun } from './settings';
 import { toUiInferenceMode, type InferenceModeSetting } from './modes';
@@ -46,6 +47,9 @@ export async function requestModelDetection(
   if (response.run) {
     await saveLastRun(response.run);
     await setInferenceMode(toUiInferenceMode(response.run.source));
+  }
+  if (response.ok && response.spans) {
+    void maybeSubmitSpansTelemetry(response.spans, response.run?.source);
   }
   return response;
 }

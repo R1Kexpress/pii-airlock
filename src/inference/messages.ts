@@ -1,6 +1,13 @@
 import type { DetectionSpan } from '../detection/types';
+import type { RemotePolicy } from '../firebase/policy-keys';
+import type { PiiType } from '../detection/types';
 import type { OnDeviceStatus } from './hybrid-model';
-import { type InferenceModeSetting, type InferenceRunReport, isInferenceModeSetting } from './modes';
+import {
+  type InferenceModeSetting,
+  type InferenceRunReport,
+  type RunSource,
+  isInferenceModeSetting,
+} from './modes';
 import type { AppCheckStatus } from '../firebase/app-check';
 
 /**
@@ -19,6 +26,8 @@ export const InferenceMessageType = {
   /** Service worker -> host. */
   HOST_DETECT: 'AIRLOCK_HOST_DETECT',
   HOST_DIAGNOSTICS: 'AIRLOCK_HOST_DIAGNOSTICS',
+  HOST_SYNC_POLICY: 'AIRLOCK_HOST_SYNC_POLICY',
+  HOST_SUBMIT_TELEMETRY: 'AIRLOCK_HOST_SUBMIT_TELEMETRY',
 } as const;
 
 export interface ModelDetectRequest {
@@ -43,6 +52,26 @@ export interface HostDiagnosticsRequest {
   target: typeof INFERENCE_HOST_TARGET;
   type: typeof InferenceMessageType.HOST_DIAGNOSTICS;
 }
+
+export interface HostSyncPolicyRequest {
+  target: typeof INFERENCE_HOST_TARGET;
+  type: typeof InferenceMessageType.HOST_SYNC_POLICY;
+}
+
+export interface HostSubmitTelemetryRequest {
+  target: typeof INFERENCE_HOST_TARGET;
+  type: typeof InferenceMessageType.HOST_SUBMIT_TELEMETRY;
+  categories: Partial<Record<PiiType, number>>;
+  mode?: RunSource;
+}
+
+export type PolicySyncResponse =
+  | { ok: true; policy: RemotePolicy; source: 'remote' | 'local' }
+  | { ok: false; errorCode: string };
+
+export type TelemetrySubmitResponse =
+  | { ok: true }
+  | { ok: false; errorCode: string };
 
 export type ModelDetectResponse =
   | { ok: true; spans: DetectionSpan[]; run: InferenceRunReport }
@@ -89,5 +118,25 @@ export function isHostDiagnosticsRequest(value: unknown): value is HostDiagnosti
     isRecord(value) &&
     value.target === INFERENCE_HOST_TARGET &&
     value.type === InferenceMessageType.HOST_DIAGNOSTICS
+  );
+}
+
+export function isHostSyncPolicyRequest(value: unknown): value is HostSyncPolicyRequest {
+  return (
+    isRecord(value) &&
+    value.target === INFERENCE_HOST_TARGET &&
+    value.type === InferenceMessageType.HOST_SYNC_POLICY
+  );
+}
+
+export function isHostSubmitTelemetryRequest(
+  value: unknown,
+): value is HostSubmitTelemetryRequest {
+  return (
+    isRecord(value) &&
+    value.target === INFERENCE_HOST_TARGET &&
+    value.type === InferenceMessageType.HOST_SUBMIT_TELEMETRY &&
+    typeof value.categories === 'object' &&
+    value.categories !== null
   );
 }

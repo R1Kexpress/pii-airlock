@@ -4,6 +4,10 @@ import {
   type InferenceRunReport,
   isInferenceModeSetting,
 } from './modes';
+import {
+  SETTINGS_STORAGE_KEY,
+  parseStoredSettings,
+} from '../settings/storage';
 
 const MODE_KEY = 'inferenceMode';
 const LAST_RUN_KEY = 'lastInferenceRun';
@@ -18,6 +22,19 @@ export async function getModeSetting(): Promise<InferenceModeSetting> {
 }
 
 export async function setModeSetting(mode: InferenceModeSetting): Promise<void> {
+  await chrome.storage.local.set({ [MODE_KEY]: mode });
+  const stored = await chrome.storage.local.get(SETTINGS_STORAGE_KEY);
+  const settings = parseStoredSettings(stored[SETTINGS_STORAGE_KEY]);
+  await chrome.storage.local.set({
+    [SETTINGS_STORAGE_KEY]: {
+      ...settings,
+      userOverrides: { ...settings.userOverrides, inferenceMode: true },
+    },
+  });
+}
+
+/** Remote Config policy updates must not count as an explicit user choice. */
+export async function setModeFromPolicy(mode: InferenceModeSetting): Promise<void> {
   await chrome.storage.local.set({ [MODE_KEY]: mode });
 }
 

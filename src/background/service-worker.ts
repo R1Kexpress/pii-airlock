@@ -10,13 +10,18 @@ import {
   getInferenceMode,
   loadLedger,
   loadSettings,
+  markOptionsSaved,
   recordLedgerIncrements,
   saveSettings,
   setEnabled,
   setInferenceMode,
 } from './state';
+import { syncRemotePolicy } from './policy-sync';
+import { maybeSubmitLedgerTelemetry } from './telemetry-bridge';
 
-void ensureDefaultSettings();
+void ensureDefaultSettings().then(() => {
+  void syncRemotePolicy();
+});
 
 registerInferenceBridge();
 
@@ -79,7 +84,7 @@ chrome.runtime.onMessage.addListener(
           return;
         }
         case MessageType.SAVE_SETTINGS: {
-          await saveSettings(message.settings);
+          await saveSettings(markOptionsSaved(message.settings));
           sendResponse({
             type: MessageType.SAVE_SETTINGS_RESULT,
             ok: true,
@@ -96,6 +101,7 @@ chrome.runtime.onMessage.addListener(
         }
         case MessageType.RECORD_LEDGER: {
           await recordLedgerIncrements(message.increments);
+          void maybeSubmitLedgerTelemetry(message.increments);
           sendResponse({
             type: MessageType.PONG,
             from: 'service-worker',

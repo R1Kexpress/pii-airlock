@@ -24,7 +24,20 @@ export function renderOptions(model: OptionsViewModel): string {
 
   const cards = PRESET_IDS.map((id) => presetCard(id, model.settings!)).join('');
 
+  const telemetryChecked = model.settings.telemetryOptIn ? 'checked' : '';
+
   return `
+    <section class="card options-telemetry">
+      <h3>Anonymous telemetry</h3>
+      <p class="muted">
+        When enabled, the extension sends daily increment-only counters (category and inference
+        mode). No prompt text, detected values, or user identifiers are included.
+      </p>
+      <label>
+        <input type="checkbox" id="telemetry-opt-in" ${telemetryChecked} />
+        Share anonymized usage counters
+      </label>
+    </section>
     <div class="preset-grid">${cards}</div>
     <div class="options-actions">
       <button type="button" id="save-settings" class="btn primary">Save</button>

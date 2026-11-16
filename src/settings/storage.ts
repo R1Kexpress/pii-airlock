@@ -1,12 +1,14 @@
 import { PII_TYPES, type PiiType } from '../detection/types';
 import { DEFAULT_PRESETS } from './presets';
 import {
+  EMPTY_USER_OVERRIDES,
   PRESET_IDS,
   SETTINGS_VERSION,
   type AirlockSettings,
   type CategorySettings,
   type PresetId,
   type PresetStore,
+  type UserOverrides,
 } from './types';
 
 export const SETTINGS_STORAGE_KEY = 'airlock_settings';
@@ -17,6 +19,8 @@ export function createDefaultSettings(): AirlockSettings {
     enabled: true,
     activePreset: 'personal',
     presets: clonePresetStore(DEFAULT_PRESETS),
+    telemetryOptIn: false,
+    userOverrides: { ...EMPTY_USER_OVERRIDES },
   };
 }
 
@@ -42,6 +46,17 @@ function isPresetStore(value: unknown): value is PresetStore {
   );
 }
 
+function isUserOverrides(value: unknown): UserOverrides {
+  if (typeof value !== 'object' || value === null) return { ...EMPTY_USER_OVERRIDES };
+  const o = value as Record<string, unknown>;
+  return {
+    masterEnabled: o.masterEnabled === true,
+    inferenceMode: o.inferenceMode === true,
+    presets: o.presets === true,
+    telemetry: o.telemetry === true,
+  };
+}
+
 /** Parse and migrate stored JSON; never throws — returns defaults on bad data. */
 export function parseStoredSettings(raw: unknown): AirlockSettings {
   const defaults = createDefaultSettings();
@@ -55,12 +70,17 @@ export function parseStoredSettings(raw: unknown): AirlockSettings {
   const presets = isPresetStore(obj.presets)
     ? clonePresetStore(obj.presets)
     : defaults.presets;
+  const telemetryOptIn =
+    typeof obj.telemetryOptIn === 'boolean' ? obj.telemetryOptIn : defaults.telemetryOptIn;
+  const userOverrides = isUserOverrides(obj.userOverrides);
 
   return {
     version: SETTINGS_VERSION,
     enabled,
     activePreset,
     presets,
+    telemetryOptIn,
+    userOverrides,
   };
 }
 
