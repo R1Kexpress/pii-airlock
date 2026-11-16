@@ -366,7 +366,6 @@ describe('unknown placeholders', () => {
     expect(stream(['a [SSN_1] b'], lookup)).toBe('a [SSN_1] b');
   });
 });
-});
 
 describe('lookalike text', () => {
   it.each([
