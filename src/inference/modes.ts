@@ -80,3 +80,8 @@ export function buildRunReport(args: {
     finishedAt: (args.now ?? Date.now)(),
   };
 }
+
+/** Maps a run source onto the popup badge's vocabulary (src/inference/mode.ts). */
+export function toUiInferenceMode(source: RunSource): 'on-device' | 'cloud' | 'unknown' {
+  return source === 'on-device' || source === 'cloud' ? source : 'unknown';
+}

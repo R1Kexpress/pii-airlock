@@ -9,8 +9,9 @@ import {
   isModelDetectRequest,
   isModelDiagnosticsRequest,
 } from './messages';
+import { setInferenceMode } from '../background/state';
 import { getModeSetting, saveLastRun } from './settings';
-import type { InferenceModeSetting } from './modes';
+import { toUiInferenceMode, type InferenceModeSetting } from './modes';
 
 async function sendToHost<T>(message: HostDetectRequest | HostDiagnosticsRequest): Promise<T> {
   await ensureOffscreenDocument();
@@ -42,7 +43,10 @@ export async function requestModelDetection(
   if (!response || typeof response !== 'object' || typeof response.ok !== 'boolean') {
     return { ok: false, errorCode: 'host-bad-response' };
   }
-  if (response.run) await saveLastRun(response.run);
+  if (response.run) {
+    await saveLastRun(response.run);
+    await setInferenceMode(toUiInferenceMode(response.run.source));
+  }
   return response;
 }
 

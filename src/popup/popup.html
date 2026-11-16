@@ -4,15 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PII Airlock</title>
+    <link rel="stylesheet" href="../ui/theme.css" />
     <link rel="stylesheet" href="./popup.css" />
   </head>
   <body>
-    <main>
-      <h1>PII Airlock</h1>
-      <p id="status">Checking…</p>
-      <p class="hint">Regex layer active.</p>
-      <section id="inference-panel" aria-label="Inference mode"></section>
-    </main>
+    <main id="app" class="popup-root" aria-live="polite"></main>
+    <section id="inference-panel" class="popup-root" aria-label="Inference mode"></section>
     <script type="module" src="./popup.ts"></script>
     <script type="module" src="./inference-panel.ts"></script>
   </body>

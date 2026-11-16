@@ -7,6 +7,7 @@ import {
   buildRunReport,
   isInferenceModeSetting,
   summarizeSources,
+  toUiInferenceMode,
 } from './modes';
 
 // These use the real installed SDK constants (not mocked) as a contract check.
@@ -85,5 +86,14 @@ describe('buildRunReport', () => {
     expect(isInferenceModeSetting('only-in-cloud')).toBe(true);
     expect(isInferenceModeSetting('prefer_on_device')).toBe(false);
     expect(isInferenceModeSetting(undefined)).toBe(false);
+  });
+});
+
+describe('toUiInferenceMode', () => {
+  it('only reports on-device or cloud when unambiguous', () => {
+    expect(toUiInferenceMode('on-device')).toBe('on-device');
+    expect(toUiInferenceMode('cloud')).toBe('cloud');
+    expect(toUiInferenceMode('mixed')).toBe('unknown');
+    expect(toUiInferenceMode('unknown')).toBe('unknown');
   });
 });

@@ -31,7 +31,7 @@ beforeEach(() => {
     offscreen: { hasDocument, createDocument, Reason: { TESTING: 'TESTING' } },
     storage: {
       local: { get: async () => ({ inferenceMode: 'only-in-cloud' }) },
-      session: { set: sessionSet },
+      session: { set: sessionSet, get: async () => ({}) },
     },
   });
 });
@@ -63,6 +63,7 @@ describe('inference bridge', () => {
       mode: 'only-in-cloud',
     });
     expect(sessionSet).toHaveBeenCalledWith({ lastInferenceRun: run });
+    expect(sessionSet).toHaveBeenCalledWith({ airlock_inference_mode: 'on-device' });
     expect(JSON.stringify(sessionSet.mock.calls)).not.toContain('hello');
   });
 
