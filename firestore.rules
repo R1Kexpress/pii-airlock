@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function intField(data, key) {
+      return !(key in data) || data[key] is int;
+    }
+
+  function validMetricDocument(data) {
+      return data.keys().hasOnly([
+          'category_ssn',
+          'category_credit_card',
+          'category_email',
+          'category_phone',
+          'category_api_key',
+          'category_iban',
+          'mode_on_device',
+          'mode_in_cloud',
+        ])
+        && intField(data, 'category_ssn')
+        && intField(data, 'category_credit_card')
+        && intField(data, 'category_email')
+        && intField(data, 'category_phone')
+        && intField(data, 'category_api_key')
+        && intField(data, 'category_iban')
+        && intField(data, 'mode_on_device')
+        && intField(data, 'mode_in_cloud');
+    }
+
+    match /airlock_metrics/{dayId} {
+      allow read: if false;
+      allow create: if signedIn() && validMetricDocument(request.resource.data);
+      allow update: if signedIn() && validMetricDocument(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

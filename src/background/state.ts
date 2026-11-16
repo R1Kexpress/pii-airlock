@@ -31,6 +31,18 @@ export async function saveSettings(next: AirlockSettings): Promise<void> {
   await chrome.storage.local.set({ [SETTINGS_STORAGE_KEY]: next });
 }
 
+/** Marks preset / telemetry fields as user-owned (options page Save). */
+export function markOptionsSaved(settings: AirlockSettings): AirlockSettings {
+  return {
+    ...settings,
+    userOverrides: {
+      ...settings.userOverrides,
+      presets: true,
+      telemetry: true,
+    },
+  };
+}
+
 export async function getEnabled(): Promise<boolean> {
   const s = await loadSettings();
   return s.enabled;
@@ -38,7 +50,11 @@ export async function getEnabled(): Promise<boolean> {
 
 export async function setEnabled(enabled: boolean): Promise<AirlockSettings> {
   const s = await loadSettings();
-  const next = { ...s, enabled };
+  const next = {
+    ...s,
+    enabled,
+    userOverrides: { ...s.userOverrides, masterEnabled: true },
+  };
   await saveSettings(next);
   return next;
 }

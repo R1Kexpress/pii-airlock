@@ -1,12 +1,18 @@
 import { initFirebase } from '../firebase/init';
 import { detectWithModel, DetectWithModelError } from './detect-with-model';
 import { checkOnDeviceStatus } from './hybrid-model';
+import { fetchRemotePolicy } from '../firebase/remote-config-policy';
+import { submitAnonymizedMetrics } from '../firebase/telemetry';
 import {
   type DiagnosticsResponse,
   type HostDiagnostics,
   type ModelDetectResponse,
+  type PolicySyncResponse,
+  type TelemetrySubmitResponse,
   isHostDetectRequest,
   isHostDiagnosticsRequest,
+  isHostSubmitTelemetryRequest,
+  isHostSyncPolicyRequest,
 } from './messages';
 
 export async function collectDiagnostics(
@@ -52,6 +58,33 @@ export function registerInferenceHost(): void {
         (diagnostics) => sendResponse({ ok: true, diagnostics } satisfies DiagnosticsResponse),
         () => sendResponse({ ok: false, errorCode: 'internal-error' } satisfies DiagnosticsResponse),
       );
+      return true;
+    }
+    if (isHostSyncPolicyRequest(message)) {
+      void (async (): Promise<PolicySyncResponse> => {
+        try {
+          const { app } = initFirebase();
+          const { policy, source } = await fetchRemotePolicy(app);
+          return { ok: true, policy, source };
+        } catch {
+          return { ok: false, errorCode: 'policy-fetch-failed' };
+        }
+      })().then(sendResponse);
+      return true;
+    }
+    if (isHostSubmitTelemetryRequest(message)) {
+      void (async (): Promise<TelemetrySubmitResponse> => {
+        try {
+          const { app } = initFirebase();
+          await submitAnonymizedMetrics(app, {
+            categories: message.categories,
+            mode: message.mode,
+          });
+          return { ok: true };
+        } catch {
+          return { ok: false, errorCode: 'telemetry-failed' };
+        }
+      })().then(sendResponse);
       return true;
     }
     return false;
