@@ -1,13 +1,13 @@
 export const OFFSCREEN_DOCUMENT_PATH = 'src/inference/offscreen.html';
 
 /**
- * TODO(verify): no documented offscreen `reasons` value fits "run AI inference" (API notes
- * section 9). TESTING is the only honest choice for an unpacked hackathon build; Chrome may
- * review the justification string. Re-pick before any Web Store submission.
+ * Chrome blocks `TESTING` unless the browser was launched with `--offscreen-document-testing`.
+ * Use `DOM_PARSER` for a hidden DOM document (VERIFIED-DOC: offscreen `Reason` enum). No single
+ * reason clearly means “AI inference”; pick the closest for unpacked dev and revisit for store.
  */
-export const OFFSCREEN_REASON = 'TESTING' as const;
+export const OFFSCREEN_REASON = 'DOM_PARSER' as const;
 export const OFFSCREEN_JUSTIFICATION =
-  'Hosts on-device Prompt API / Firebase AI Logic inference, which needs a DOM context unavailable in service workers.';
+  'Hosts Firebase AI Logic and Remote Config in a hidden DOM context unavailable in service workers.';
 
 let creating: Promise<void> | undefined;
 

@@ -4,6 +4,8 @@ import type { PresetId, PresetStore } from '../settings/types';
 import { PRESET_IDS } from '../settings/types';
 
 /** Remote Config parameter names (publish matching keys in Firebase console). */
+export const REMOTE_POLICY_STORAGE_KEY = 'airlock_remote_policy_cache';
+
 export const REMOTE_CONFIG_KEYS = {
   killSwitch: 'airlock_kill_switch',
   defaultInferenceMode: 'airlock_default_inference_mode',

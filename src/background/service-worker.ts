@@ -20,7 +20,9 @@ import { syncRemotePolicy } from './policy-sync';
 import { maybeSubmitLedgerTelemetry } from './telemetry-bridge';
 
 void ensureDefaultSettings().then(() => {
-  void syncRemotePolicy();
+  void syncRemotePolicy().catch(() => {
+    // Policy sync uses the offscreen host; failures must not prevent SW registration.
+  });
 });
 
 registerInferenceBridge();

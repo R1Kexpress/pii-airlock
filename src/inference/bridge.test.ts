@@ -28,7 +28,7 @@ beforeEach(() => {
       sendMessage,
       onMessage: { addListener: (fn: typeof listener) => (listener = fn) },
     },
-    offscreen: { hasDocument, createDocument, Reason: { TESTING: 'TESTING' } },
+    offscreen: { hasDocument, createDocument, Reason: { DOM_PARSER: 'DOM_PARSER' } },
     storage: {
       local: { get: async () => ({ inferenceMode: 'only-in-cloud' }) },
       session: { set: sessionSet, get: async () => ({}) },
@@ -54,7 +54,7 @@ describe('inference bridge', () => {
     await vi.waitFor(() => expect(respond).toHaveBeenCalled());
 
     expect(createDocument).toHaveBeenCalledWith(
-      expect.objectContaining({ url: 'src/inference/offscreen.html', reasons: ['TESTING'] }),
+      expect.objectContaining({ url: 'src/inference/offscreen.html', reasons: ['DOM_PARSER'] }),
     );
     expect(sendMessage).toHaveBeenCalledWith({
       target: INFERENCE_HOST_TARGET,

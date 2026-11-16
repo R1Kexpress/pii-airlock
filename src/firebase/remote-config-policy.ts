@@ -19,8 +19,6 @@ import {
   type RemotePolicy,
 } from './policy-keys';
 
-export const REMOTE_POLICY_STORAGE_KEY = 'airlock_remote_policy_cache';
-
 /** Dev-friendly fetch interval; raise in production via Remote Config settings if desired. */
 export const REMOTE_CONFIG_MIN_FETCH_MS = 3_600_000;
 
