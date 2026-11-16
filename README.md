@@ -33,6 +33,7 @@ npm install
 ## Project layout
 
 - `src/detection/` — regex detectors, merge logic, types
+- `src/rehydrate/` — streaming placeholder restoration buffer
 - `src/config/chat-sites.ts` — chat DOM selectors (empty until user-verified slice)
 - `src/background/` — service worker + messaging
 - `src/content/` — content script stub
