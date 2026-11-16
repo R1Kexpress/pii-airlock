@@ -4,6 +4,18 @@ import {
   MessageType,
   isExtensionMessage,
 } from '../messaging/types';
+import {
+  ensureDefaultSettings,
+  getInferenceMode,
+  loadLedger,
+  loadSettings,
+  recordLedgerIncrements,
+  saveSettings,
+  setEnabled,
+  setInferenceMode,
+} from './state';
+
+void ensureDefaultSettings();
 
 chrome.runtime.onMessage.addListener(
   (
@@ -13,24 +25,87 @@ chrome.runtime.onMessage.addListener(
   ) => {
     if (!isExtensionMessage(message)) return;
 
-    switch (message.type) {
-      case MessageType.PING:
-        sendResponse({
-          type: MessageType.PONG,
-          from: 'service-worker',
-        });
-        return;
-      case MessageType.DETECT_PII:
-        // Stub: full text arrives in a later slice; never log prompt content.
-        sendResponse({
-          type: MessageType.DETECT_PII_RESULT,
-          spanCount: 0,
-          ok: true,
-        });
-        return;
-      default:
-        break;
-    }
+    const handle = async (): Promise<void> => {
+      switch (message.type) {
+        case MessageType.PING:
+          sendResponse({
+            type: MessageType.PONG,
+            from: 'service-worker',
+          });
+          return;
+        case MessageType.DETECT_PII:
+          sendResponse({
+            type: MessageType.DETECT_PII_RESULT,
+            spanCount: 0,
+            ok: true,
+          });
+          return;
+        case MessageType.GET_POPUP_STATE: {
+          const [settings, ledger, mode] = await Promise.all([
+            loadSettings(),
+            loadLedger(),
+            getInferenceMode(),
+          ]);
+          sendResponse({
+            type: MessageType.POPUP_STATE,
+            connected: true,
+            enabled: settings.enabled,
+            inferenceMode: mode,
+            ledger,
+            activePreset: settings.activePreset,
+          });
+          return;
+        }
+        case MessageType.SET_ENABLED: {
+          const settings = await setEnabled(message.enabled);
+          sendResponse({
+            type: MessageType.POPUP_STATE,
+            connected: true,
+            enabled: settings.enabled,
+            inferenceMode: await getInferenceMode(),
+            ledger: await loadLedger(),
+            activePreset: settings.activePreset,
+          });
+          return;
+        }
+        case MessageType.GET_SETTINGS: {
+          sendResponse({
+            type: MessageType.SETTINGS,
+            settings: await loadSettings(),
+          });
+          return;
+        }
+        case MessageType.SAVE_SETTINGS: {
+          await saveSettings(message.settings);
+          sendResponse({
+            type: MessageType.SAVE_SETTINGS_RESULT,
+            ok: true,
+          });
+          return;
+        }
+        case MessageType.SET_INFERENCE_MODE: {
+          await setInferenceMode(message.mode);
+          sendResponse({
+            type: MessageType.PONG,
+            from: 'service-worker',
+          });
+          return;
+        }
+        case MessageType.RECORD_LEDGER: {
+          await recordLedgerIncrements(message.increments);
+          sendResponse({
+            type: MessageType.PONG,
+            from: 'service-worker',
+          });
+          return;
+        }
+        default:
+          break;
+      }
+    };
+
+    void handle();
+    return true;
   },
 );
 
