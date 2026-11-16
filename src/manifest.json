@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "PII Airlock",
+  "version": "0.1.0",
+  "description": "Detect sensitive data in chat prompts before send; placeholders + restore on response (hybrid AI slice forthcoming).",
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "PII Airlock"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["src/content/content-script.ts"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage"],
+  "host_permissions": ["https://*/*", "http://*/*"]
+}
