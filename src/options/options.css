@@ -1,0 +1,64 @@
+.options-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.options-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+}
+
+.options-header .muted {
+  margin: 0 0 16px;
+}
+
+.preset-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.preset-card {
+  padding: 14px;
+}
+
+.preset-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.preset-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.category-grid label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.options-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.preview-demo {
+  margin-top: 20px;
+  padding: 16px;
+}
+
+.preview-demo h2 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
