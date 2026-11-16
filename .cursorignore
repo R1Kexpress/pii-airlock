@@ -1,0 +1,12 @@
+node_modules/
+dist/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+*.zip
+*.crx
+*.pem
+media/
+*.mp4
+*.webm
