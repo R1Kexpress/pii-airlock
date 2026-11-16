@@ -412,9 +412,11 @@ describe('bounded hold-back', () => {
     const run = '[' + 'A'.repeat(MAX_PLACEHOLDER_LENGTH * 4);
     let out = '';
     let maxPending = 0;
+    let fed = 0;
     for (const c of run) {
       out += buf.push(c);
-      maxPending = Math.max(maxPending, run.length - out.length);
+      fed += c.length;
+      maxPending = Math.max(maxPending, fed - out.length);
     }
     expect(maxPending).toBeLessThanOrEqual(MAX_PLACEHOLDER_LENGTH);
     out += buf.flush();
