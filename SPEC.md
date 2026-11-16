@@ -36,6 +36,13 @@ Chrome MV3 extension for the #BuildHybridAI 2026 hackathon: detect sensitive dat
 - **Content script**: future prompt interception; pings background on load.
 - **Popup**: connection status stub; options/preview later.
 
+## Streaming rehydration (`src/rehydrate/`)
+
+- Placeholders are `[TYPE_N]` (`[SSN_1]`, `[CREDIT_CARD_2]`); the grammar lives in `src/rehydrate/placeholder.ts`.
+- `createRehydrationBuffer(vault, { maxHoldBack? })` returns `{ push(chunk), flush(), pendingLength }`. It depends only on `{ lookup(placeholder): string | undefined }`.
+- Only a trailing run that could still become a placeholder (max 64 chars) or half a surrogate pair is held back; values are emitted only once the closing `]` arrives. Unknown or malformed bracketed text passes through unchanged. `flush()` emits any held text verbatim.
+- Text is never logged or persisted.
+
 ## Out of scope for slice 1
 
 - Firebase init, App Check, Remote Config, Firestore
